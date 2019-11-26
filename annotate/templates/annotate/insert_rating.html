@@ -1,0 +1,56 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Rating</h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <form id="rating_form" method="post" action="{% url 'rating' %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <label for="sentence_id">Sentence ID: </label>
+                                </div>
+                                <div class="col-md-11">
+                                    <textarea name="sentence_id" id="sentence_id" rows="1" cols="75"></textarea>
+
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <label for="position">Position: </label>
+                                </div>
+                                <div class="col-md-11">
+                                    <textarea name="position" id="position" rows="1" cols="75"></textarea>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <label for="user">User: </label>
+                                </div>
+                                <div class="col-md-11">
+                                    <textarea name="user" id="user" rows="1" cols="75"></textarea>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-1">
+                                    <label for="rating">Rating </label>
+                                </div>
+                                <div class="col-md-11">
+                                    <textarea name="rating" id="rating" rows="1" cols="75"></textarea>
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn" type="submit">Save</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

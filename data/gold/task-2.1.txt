@@ -1,0 +1,5 @@
+#20466020 24 drop.Change_position_on_a_scale stock-:-21-:-Item price-:-22-:-Attribute
+#20141014 23 increase.Change_position_on_a_scale income-:-21-:-Item
+#20036026 18 fall.Change_position_on_a_scale order-:-4-:-Attribute goods-:-7-:-Item %-:-20-:-Difference $-:-24-:-Final_value
+#21057052 8 begin.Activity_start he-:-7-:-Agent career-:-10-:-Activity
+#21120012 10 start.Process_start ldp-:-9-:-Agent crumble-:-12-:-Event 

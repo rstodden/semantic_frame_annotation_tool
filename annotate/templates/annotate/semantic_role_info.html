@@ -1,0 +1,28 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Semantic Role Labels</h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <table>
+                        <tr>
+                            <th>Thematic Role</th>
+                            <th>Description</th>
+                        </tr>
+                        {% for role in semantic_role_dict %}
+                            <tr>
+                                <td>{{ role.name }}</td>
+                                {% if role.definition %}
+                                    <td>{{ role.definition }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    {% endblock %}

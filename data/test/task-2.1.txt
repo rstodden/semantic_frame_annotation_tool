@@ -1,0 +1,5 @@
+#20466020 24 drop.UKN stock-:-21-:-UKN price-:-22-:-UKN
+#20141014 23 increase.UKN income-:-21-:-UKN
+#20036026 18 fall.UKN order-:-4-:-UKN goods-:-7-:-UKN %-:-20-:-UKN $-:-24-:-UKN
+#21057052 8 begin.UKN he-:-7-:-UKN career-:-10-:-UKN
+#21120012 10 start.UKN ldp-:-9-:-UKN crumble-:-12-:-UKN 

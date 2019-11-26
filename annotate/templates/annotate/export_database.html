@@ -1,0 +1,80 @@
+    {% extends 'annotate/base.html' %}
+
+        {% block content %}
+            <h1>Export Database</h1>
+            <!-- use buttons instead of links? -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        Set settings for the export of the annotated frames:
+                    </div>
+                </div>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="annotated_frames">annotated frames:</label>
+                            <br>
+                            <label for="not_annotated_frames">not annotated frames:</label>
+                            <br>
+                            <label for="frames_with_comments">only frames with comments:</label>
+                        </div>
+                        <div class="col-md-10">
+                            <input type="checkbox" id="annotated_frames" name="annotated_frames">
+                            <br>
+                            <input type="checkbox" id="not_annotated_frames" name="not_annotated_frames">
+                            <br>
+                            <input type="checkbox" id="frames_with_comments" name="frames_with_comments">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="frames_frame_type">only frames with frame type(s):</label>
+                        </div>
+                        <div class="col-md-10">
+                            <select size="5" id="frametype_selection" name="frametype_selection" multiple>
+                                {% for frametype in frametype_list %}
+                                    <option value="{{ frametype }}" name="frametype_option">{{ frametype }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="frames_verb">only frames with verb(s):</label>
+                        </div>
+                        <div class="col-md-10">
+                            <select size="5" name="verb_selection" id="verb_selection" multiple>
+                                {% for verb in verb_list %}
+                                    <option value="{{ verb }}" name="verb_option">{{ verb }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="user_selection">only frames of user(s):</label>
+                        </div>
+                        <div class="col-md-10">
+                            <select size="5" name="user_selection" id="user_selection" multiple>
+                                {% for user in user_list %}
+                                    <option value="{{ user }}" name="user_option">{{ user }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ error }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" id="export_button" class="btn">Export</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+        {% endblock %}

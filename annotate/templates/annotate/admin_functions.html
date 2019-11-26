@@ -1,0 +1,62 @@
+    {% extends 'annotate/base.html' %}
+
+        {% block content %}
+            <h1>Admin Functions</h1>
+            <!-- use buttons instead of links? -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <ul style="font-size: 13pt">
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'insert_framenet_files' %}" onclick="return confirm('Are you sure?')">insert frame net files <b>(Done! No repetition needed.)</b></a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'insert_missing_framenet_files' %}">insert missing/deleted frame net files</a>
+                            </li>
+
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'insert_frames' %}">(encode and) insert frame records</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'add_non_core' %}" onclick="return confirm('Are you sure?')">Add non core element types</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'assign_users' %}">assign users to frames</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'export_database' %}">export annotated frames</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'export_history' %}">export history of changes of frames</a>
+                            </li>
+                            <!--<li style="margin-bottom:20px;">
+                                <a href="{% url 'convert_core_elements' %}">Convert core elements to slots</a>
+                            </li>-->
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'add_roles' %}">Add semantic roles to slots</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'change_roles' %}">Add/change role labels</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'add_synonyms' %}">Add synonyms to database</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'delete_types' %}">Delete wrong connection between FrameType and LexicalUnit or ElementTypes</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'delete_old_framenet_types' %}" onclick="swal('Dangerous', 'Old FEs will be deleted.', 'warning');">Delete old FrameNet types</a> frames: {{result_frames}} frames_nr: {{result_frames_nr}} slots: {{result_slots}} slots_nr: {{result_slots_nr}}
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'delete_non_lexicalized_frames' %}">Delete non-lexicalized frames</a>
+                            </li>
+                            <li style="margin-bottom:20px;">
+                                <a href="{% url 'set_settings' %}">Set annotation settings</a>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+        {% endblock %}

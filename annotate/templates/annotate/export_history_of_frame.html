@@ -1,0 +1,41 @@
+    {% extends 'annotate/base.html' %}
+
+        {% block content %}
+            <h1>Export Database</h1>
+            <!-- use buttons instead of links? -->
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        Set settings for the export of the annotated frames:
+                    </div>
+                </div>
+                <form action="" method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-2">
+                            <label for="frame_selection">frame:</label>
+                        </div>
+                        <div class="col-md-10">
+                            <select size="5" id="frame_selection" name="frame_selection">
+                                {% for frame in frame_list %}
+                                    <option value="{{ frame.sentence_id }}_{{ frame.position }}" name="frame_option">{{ frame.verb_lemma }}.{{ frame.f_type }} in {{ frame.sentence_id }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            {{ error }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <button type="submit" id="export_button" class="btn">Export</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+
+        {% endblock %}

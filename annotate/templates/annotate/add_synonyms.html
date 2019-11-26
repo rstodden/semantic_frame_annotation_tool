@@ -1,0 +1,30 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Encode frames</h1>
+        <div class="container-fluid">
+            <form method="post" enctype="multipart/form-data">
+                {%  csrf_token %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <label> Choose the file which contains the synonyms:
+                            <input name="synonym_file" type="file" size="50" accept="text/*" required>
+                        </label>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>{{  error }}</p>
+                        <p> {{ success }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button name="submit_synonym_file" type="submit">Upload</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    {% endblock %}

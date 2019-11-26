@@ -1,0 +1,274 @@
+    {% extends 'annotate/base.html' %}
+
+        {% block content %}
+            <!-- use buttons instead of links? -->
+            <div class="container-fluid">
+            <input id="all_frame_types" name="all_frame_types" value="{{ request.session.all_frame_types }}" hidden>
+            <input id="all_verbs" name="all_verbs" value="{{ request.session.all_verbs }}" hidden>
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="row">
+                        <h3 style="color:darkred">{{ message }}</h3>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="row">
+                                <h3>Unannotated Records ({{ request.session.nr_selected_frames_not_annotated_frames}} / {{request.session.nr_all_frames_not_annotated_frames }}):</h3>
+                                <table class="tablesorter records" id="table_unannotated_records">
+                                    <thead>
+                                        <tr>
+                                            <th  class="col-md-4">verb</th>
+                                            <th class="col-md-8">frame_type</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-md-3"><input type="text" size="6" placeholder="verb:" id="searchbox_not_annotated_frames_verb"> <span onclick="change_records_view('not_annotated_frames', 'search_verb', $('#searchbox_not_annotated_frames_verb').val())">&#128269;</span></td>
+                                            <td class="col-md-3"><input type="text" size="15" placeholder="frame_type:" id="searchbox_not_annotated_frames_frame"><span onclick="change_records_view('not_annotated_frames', 'search_frame', $('#searchbox_not_annotated_frames_frame').val())">&#128269;</span></td>
+                                        </tr>
+                                        {% for e in not_annotated_frames %}
+                                            <tr name="record_of_not_annotated_frames" class='clickable-row' data-href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">
+                                                <td  class="col-md-4"><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.verb_lemma }}{{ e.verb_addition }}</a></td>
+                                                <td class="col-md-8"><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.f_type }}</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="pager" id="pager_unannotated">
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/first.png" class="first" onclick="change_records_view('not_annotated_frames', 'first',0)"/>
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/prev.png" class="prev" onclick="change_records_view('not_annotated_frames', 'prev',0)"/>
+                                    <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/next.png" class="next"  onclick="change_records_view('not_annotated_frames', 'next',0)"/>
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/last.png" class="last" onclick="change_records_view('not_annotated_frames', 'last',0)"/>
+                                    <select class="pagesize" title="Select page size">
+                                        <option selected="selected" value="25" onclick="change_records_view('not_annotated_frames', 'number_elements', 25)">25</option>
+                                        <option value="50" onclick="change_records_view('not_annotated_frames', 'number_elements', 50)">50</option>
+                                        <option value="100" onclick="change_records_view('not_annotated_frames', 'number_elements', 100)">100</option>
+                                        <option value="250" onclick="change_records_view('not_annotated_frames', 'number_elements', 250)">250</option>
+                                        <option value="6000" onclick="change_records_view('not_annotated_frames', 'number_elements', 6000)">ALL</option>
+                                    </select>
+                                </div>
+                                <!--{% for e in not_annotated_frames %}
+                                    {% if forloop.counter == 1 %}
+                                        <div id="list_of_records_{{ forloop.counter }}">
+                                            <ul id="list_of_records_{{ forloop.counter }}" class="frame_links">
+                                                <li><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}"> {{ e.verb_lemma }}{{ e.verb_addition }} ({{ e.f_type }}, {{ e.sentence_id }})</a></li>
+                                    {% elif forloop.counter|modulo:50  %}
+                                            </ul>
+                                            <a class="btn synnonym_button" data-toggle="collapse" href="#list_of_records_{{ forloop.counter }}" role="button" aria-expanded="false" aria-expanded="false" id="button_show_synonyms">
+                                                Show more records <i class="fa fa-chevron-down" id="unannotated_more" onclick="rotate_arrow('unannotated_more')"></i>
+                                            </a>
+                                        </div>
+
+                                        <div class="collapse" id="list_of_records_{{ forloop.counter }}">
+                                            <ul id="list_of_records_{{ forloop.counter }}" class="frame_links">
+                                                <li><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}"> {{ e.verb_lemma }}{{ e.verb_addition }} ({{ e.f_type }}, {{ e.sentence_id }})</a></li>
+                                    {% else %}
+                                        <li><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}"> {{ e.verb_lemma }}{{ e.verb_addition }} ({{ e.f_type }}, {{ e.sentence_id }})</a></li>
+                                    {% endif %}
+                                    {% if forloop.counter == not_annotated_frames|length %}
+                                            </ul>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}-->
+                            </div>
+                        </div>
+                        <div class="col-md-1"></div>
+                        <div class="col-md-7">
+                            <div class="row">
+                                <h3>Annotation In-Progress ({{ request.session.nr_selected_frames_frames_in_progress}} / {{request.session.nr_all_frames_frames_in_progress }}):</h3>
+                                <table class="tablesorter records" id="table_progress_records">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-md-3" >verb</th>
+                                            <th class="col-md-2" >sent_id</th>
+                                            <th class="col-md-3" >frame_type</th>
+                                            <th class="col-md-1"  ></th>
+                                            <th class="col-md-3" name="table_header_progress">last change at</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-md-3"><input type="text" size="6" placeholder="verb:" id="searchbox_frames_in_progress_verb"> <span onclick="change_records_view('frames_in_progress', 'search_verb', $('#searchbox_frames_in_progress_verb').val())">&#128269;</span></td>
+                                            <td class="col-md-2"><input type="text" size="7" placeholder=" sent_id:" id="searchbox_frames_in_progress_sentid"> <span onclick="change_records_view('frames_in_progress', 'search_sent_id', $('#searchbox_frames_in_progress_sentid').val())">&#128269;</span></td>
+                                            <td class="col-md-3"><input type="text" size="15" placeholder="frame_type:" id="searchbox_frames_in_progress_frame"><span onclick="change_records_view('frames_in_progress', 'search_frame', $('#searchbox_frames_in_progress_frame').val())">&#128269;</span></td>
+                                            <td class="col-md-1"><select  size="1" id="searchbox_frames_in_progress_certainty">{% for i in "12345" %}<option onclick="change_records_view('frames_in_progress', 'search_certainty', {{ i }})">{{ i }}</option>{% endfor %} </select></td>
+                                            <td class="col-md-3"></td>
+                                        </tr>
+                                        {% for e in frames_in_progress %}
+                                            <tr name="record_of_frames_in_progress" class='clickable-row' data-href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}" title='Preview: "{% for t in e.sentence.token.all %}{% if t.position >= e.position|minus:5 and t.position <= e.position|add:5 %}{{ t.word_form }} {% endif %}{% endfor %}"'>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.verb_lemma }}{{ e.verb_addition }}</a></td>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.sentence_id }}</a></td>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.f_type }}</a></td>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">
+                                                    {% if e.certainty == 1 %}
+                                                        <span class="certainty_1">&#x2460;</span>
+                                                    {% elif e.certainty == 2 %}
+                                                        <span class="certainty_2">&#x2461;</span>
+                                                    {% elif e.certainty == 3 %}
+                                                        <span class="certainty_3">&#x2462;</span>
+                                                    {% elif e.certainty == 4 %}
+                                                        <span class="certainty_4">&#x2463;</span>
+                                                    {% elif e.certainty == 5 %}
+                                                        <span class="certainty_5">&#x2464;</span>
+                                                    {% endif %}
+                                                </a>
+                                                </td>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.timestamp|date:"d.m.Y H:i" }}</a></td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="pager" id="pager_progress">
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/first.png" class="first" onclick="change_records_view('frames_in_progress', 'first',0)"/>
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/prev.png" class="prev" onclick="change_records_view('frames_in_progress', 'prev',0)"/>
+                                    <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/next.png" class="next"  onclick="change_records_view('frames_in_progress', 'next',0)"/>
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/last.png" class="last" onclick="change_records_view('frames_in_progress', 'last',0)"/>
+                                    <select class="pagesize" title="Select page size">
+                                        <option selected="selected" value="25" onclick="change_records_view('frames_in_progress', 'number_elements', 25)">25</option>
+                                        <option value="50" onclick="change_records_view('frames_in_progress', 'number_elements', 50)">50</option>
+                                        <option value="100" onclick="change_records_view('frames_in_progress', 'number_elements', 100)">100</option>
+                                        <option value="250" onclick="change_records_view('frames_in_progress', 'number_elements', 250)">250</option>
+                                        <option value="6000" onclick="change_records_view('frames_in_progress', 'number_elements', 6000)">ALL</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <h3>Annotated Records ({{ request.session.nr_selected_frames_annotated}} / {{request.session.nr_all_frames_annotated }}):</h3>
+                                <table class="tablesorter records" id="table_annotated_records">
+                                    <thead>
+                                        <tr>
+                                            <form>
+                                                {% csrf_token %}
+                                                <th class="col-md-3" id="head_verb" name="table_header">verb</th>
+                                                <th class="col-md-2" id="head_sent_id"  name="table_header">sent_id</th>
+                                                <th class="col-md-3" id="head_frame_type" name="table_header">frame_type</th>
+                                                <th class="col-md-1" id="head_certainty"   name="table_header"></th>
+                                                <th class="col-md-3" id="head_last_change" name="table_header">last change at</th>
+
+                                            </form>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="col-md-3"><input type="text" size="6" placeholder="verb:" id="searchbox_annotated_verb"> <span onclick="change_records_view('annotated', 'search_verb', $('#searchbox_annotated_verb').val())">&#128269;</span></td>
+                                            <td class="col-md-2"><input type="text" size="7" placeholder=" sent_id:" id="searchbox_annotated_sentid"> <span onclick="change_records_view('annotated', 'search_sent_id', $('#searchbox_annotated_sentid').val())">&#128269;</span></td>
+                                            <td class="col-md-3"><input type="text" size="15" placeholder="frame_type:" id="searchbox_annotated_frame"><span onclick="change_records_view('annotated', 'search_frame', $('#searchbox_annotated_frame').val())">&#128269;</span></td>
+                                            <td class="col-md-1"><select  size="1" id="searchbox_annotated_certainty">{% for i in "12345" %}<option onclick="change_records_view('annotated', 'search_certainty', {{ i }})">{{ i }}</option>{% endfor %} </select></td>
+                                            <td class="col-md-3"></td>
+                                        </tr>
+                                        {% for e in annotated_frames %}
+                                            <tr name="record_of_annotated" class='clickable-row' data-href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}" title='Preview: "{% for t in e.sentence.token.all %}{% if t.position >= e.position|minus:5 and t.position <= e.position|add:5 %}{{ t.word_form }} {% endif %}{% endfor %}"'>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.verb_lemma }}{{ e.verb_addition }}</a></td>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.sentence_id }}</a></td>
+                                                <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.f_type }}</a></td>
+                                                <td>
+                                                    <a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">
+                                                    {% if e.certainty == 1 %}
+                                                        <span class="certainty_1">&#x2460;</span>
+                                                    {% elif e.certainty == 2 %}
+                                                        <span class="certainty_2">&#x2461;</span>
+                                                    {% elif e.certainty == 3 %}
+                                                        <span class="certainty_3">&#x2462;</span>
+                                                    {% elif e.certainty == 4 %}
+                                                        <span class="certainty_4">&#x2463;</span>
+                                                    {% elif e.certainty == 5 %}
+                                                        <span class="certainty_5">&#x2464;</span>
+                                                    {% endif %}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">
+                                                        {{ e.timestamp|date:"d.m.Y H:i" }}
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                                <div class="pager" id="pager">
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/first.png" class="first" onclick="change_records_view('annotated', 'first',0)"/>
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/prev.png" class="prev" onclick="change_records_view('annotated', 'prev',0)"/>
+                                    <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/next.png" class="next"  onclick="change_records_view('annotated', 'next',0)"/>
+                                    <img src="https://mottie.github.io/tablesorter/addons/pager/icons/last.png" class="last" onclick="change_records_view('annotated', 'last',0)"/>
+                                    <select class="pagesize" title="Select page size">
+                                        <option selected="selected" value="25" onclick="change_records_view('annotated', 'number_elements', 25)">25</option>
+                                        <option value="50" onclick="change_records_view('annotated', 'number_elements', 50)">50</option>
+                                        <option value="100" onclick="change_records_view('annotated', 'number_elements', 100)">100</option>
+                                        <option value="250" onclick="change_records_view('annotated', 'number_elements', 250)">250</option>
+                                        <option value="6000" onclick="change_records_view('annotated', 'number_elements', 6000)">ALL</option>
+                                    </select>
+                                    <!--<select class="gotoPage" title="Select page number"></select>-->
+                                </div>
+
+                            </div>
+                            <div class="row">
+                                <h3>Skipped Records ({{ request.session.nr_selected_frames_skipped}} / {{request.session.nr_all_frames_skipped }}):</h3>
+                                <table class="tablesorter records" id="table_skipped_records">
+                                        <thead>
+                                            <tr>
+                                                <th class="col-md-3" >verb</th>
+                                                <th class="col-md-2" >sent_id</th>
+                                                <th class="col-md-3" >frame_type</th>
+                                                <th class="col-md-1" ></th>
+                                                <th class="col-md-3" >last change at</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="col-md-3"><input type="text" size="6" placeholder="verb:" id="searchbox_skipped_verb"> <span onclick="change_records_view('skipped', 'search_verb', $('#searchbox_skipped_verb').val())">&#128269;</span></td>
+                                                <td class="col-md-2"><input type="text" size="7" placeholder=" sent_id:" id="searchbox_skipped_sentid"> <span onclick="change_records_view('skipped', 'search_sent_id', $('#searchbox_skipped_sentid').val())">&#128269;</span></td>
+                                                <td class="col-md-3"><input type="text" size="15" placeholder="frame_type:" id="searchbox_skipped_frame"><span onclick="change_records_view('skipped', 'search_frame', $('#searchbox_skipped_frame').val())">&#128269;</span></td>
+                                                <td class="col-md-1"><select  size="1" id="searchbox_skipped_certainty">{% for i in "12345" %}<option onclick="change_records_view('skipped', 'search_certainty', {{ i }})">{{ i }}</option>{% endfor %} </select></td>
+                                                <td class="col-md-3"></td>
+                                            </tr>
+                                            {% for e in skipped_frames %}
+                                                <tr name="record_of_skipped"  class='clickable-row' data-href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}"  title='Preview: "{% for t in e.sentence.token.all %}{% if t.position >= e.position|minus:5 and t.position <= e.position|add:5 %}{{ t.word_form }} {% endif %}{% endfor %}"'>
+                                                    <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.verb_lemma }}{{ e.verb_addition }}</a></td>
+                                                    <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.sentence_id }}</a></td>
+                                                    <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">{{ e.f_type }}</a></td>
+                                                    <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">
+                                                        {% if e.certainty == 1 %}
+                                                            <span class="certainty_1">&#x2460;</span>
+                                                        {% elif e.certainty == 2 %}
+                                                            <span class="certainty_2">&#x2461;</span>
+                                                        {% elif e.certainty == 3 %}
+                                                            <span class="certainty_3">&#x2462;</span>
+                                                        {% elif e.certainty == 4 %}
+                                                            <span class="certainty_4">&#x2463;</span>
+                                                        {% elif e.certainty == 5 %}
+                                                            <span class="certainty_5">&#x2464;</span>
+                                                        {% endif %}
+                                                    </a>
+                                                    </td>
+                                                    <td><a href="frame_{{ e.verb_lemma }}_{{ e.position }}_{{ e.sentence_id }}">
+                                                        {{ e.timestamp|date:"d.m.Y H:i" }}</a>
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                    <div class="pager" id="pager_skip">
+                                        <img src="https://mottie.github.io/tablesorter/addons/pager/icons/first.png" class="first" onclick="change_records_view('skipped', 'first',0)"/>
+                                        <img src="https://mottie.github.io/tablesorter/addons/pager/icons/prev.png" class="prev" onclick="change_records_view('skipped', 'prev',0)"/>
+                                        <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+                                        <img src="https://mottie.github.io/tablesorter/addons/pager/icons/next.png" class="next"  onclick="change_records_view('skipped', 'next',0)"/>
+                                        <img src="https://mottie.github.io/tablesorter/addons/pager/icons/last.png" class="last" onclick="change_records_view('skipped', 'last',0)"/>
+                                        <select class="pagesize" title="Select page size">
+                                            <option selected="selected" value="25" onclick="change_records_view('skipped', 'number_elements', 25)">25</option>
+                                            <option value="50" onclick="change_records_view('skipped', 'number_elements', 50)">50</option>
+                                            <option value="100" onclick="change_records_view('skipped', 'number_elements', 100)">100</option>
+                                            <option value="250" onclick="change_records_view('skipped', 'number_elements', 250)">250</option>
+                                            <option value="6000" onclick="change_records_view('skipped', 'number_elements', 6000)">ALL</option>
+                                        </select>
+                                    </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <script src='../static/js/search_boxes_overview.js' type="text/javascript"></script>
+            </div>
+
+        {% endblock %}

@@ -1,0 +1,37 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Upload frames</h1>
+        <div class="container-fluid">
+            <form method="post" enctype="multipart/form-data" onsubmit="return confirm('Take care! If the delete checkbox is enabled ALL previous annotations will be deleted. Do you want to continue? ')">
+                {%  csrf_token %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <label> Choose the file which contains the frames:
+                            <input name="frame_file" type="file" size="50" accept="text/*" required>
+                        </label>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <input id="drop_frames" name="drop_frames" type="checkbox">
+                        <label for="drop_frames"> delete previous frames</label>
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <p>{{  error }}</p>
+                        <p> {{ success }}</p>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button name="submit_frame_file" type="submit">Upload and assign users</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    {% endblock %}

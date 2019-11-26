@@ -1,0 +1,40 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Set annotation settings</h1>
+        <div class="container-fluid">
+            <form method="post">
+                {%  csrf_token %}
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if custom_frame_type %}
+                            <input type="checkbox" id="add_custom_frame_types" name="add_custom_frame_types" checked>
+                        {% else %}
+                            <input type="checkbox" id="add_custom_frame_types" name="add_custom_frame_types">
+                        {% endif %}
+
+                        <label for="add_custom_frame_types">Enable or disable to add <u>custom frame types </u></label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        {% if custom_element_type %}
+                            <input type="checkbox" id="add_custom_element_types" name="add_custom_element_types" checked>
+                        {% else %}
+                            <input type="checkbox" id="add_custom_element_types" name="add_custom_element_types">
+                        {% endif %}
+
+                        <label for="add_custom_element_types">Enable or disable to add custom <u>element types </u></label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    {% endblock %}

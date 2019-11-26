@@ -1,0 +1,96 @@
+
+# install apache2
+sudo apt-get install apache2 
+sudo apt-get install apache2-dev
+
+#install python
+sudo apt-get install python3-dev
+
+# install connection between apache and python
+sudo apt-get install libapache2-mod-wsgi-py3 
+
+# add port 8080 to apache if you want to run on port 8080
+add Listen 8080 to /etc/apache2/ports.conf 
+comment/delete Listen 80 in /etc/apache2/ports.conf if port is used somewhere else
+
+
+# enable mod_wsgi
+sudo a2enmod wsgi 
+
+# get mod_wsgi 
+wget https://github.com/GrahamDumpleton/mod_wsgi/archive/4.6.5.tar.gz
+tar xvfz mod_wsgi-4.6.5.tar.gz
+cd mod_wsgi-4.6.5/
+./configure --with-python=/usr/bin/python3.6
+make
+sudo make installmake
+
+#load module into apache 
+add LoadModule wsgi_module /usr/lib/apache2/modules/mod_wsgi.so to etc/apache2/apache2.conf
+
+# restart apache
+systemctl restart apache2.service
+
+make clean
+
+
+# move project to /var/www/annotation_tool
+# if you want to move the files to another directory, you have to change the paths in wsgi.py, too
+cd /var/www
+sudo git clone -b deploy_version  https://github.com/rstodden/annotation_tool.git
+
+
+#create virtualenviroment and push to git
+cd annotation_tool
+sudo apt-get install python-virtualenv 
+sudo pip install virtualenv
+sudo chown -cR annotation:annotation venv
+sudo virtualenv -p /usr/bin/python3 venv/
+source venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
+# add app file with config
+sudo touch /etc/apache2/sites-available/annotation-tool.conf
+
+# fill the file with the following, change the port in the first line to the port you prefer. 
+# change **/** in WSGIScriptAlias / /var/www/annotation_tool/semantic_frame_annotation/wsgi.py to the url addition you prefer. This results in sfa.phil.hhu.de:8080. If you replace it **/** with **annotation_tool** it is reachable under sfa.phil.hhu.de:8080/annotation_tool
+# also specify your url, e.g. example.com
+<VirtualHost *:8080> # change to the port you want
+    
+    ServerName example.com
+    #DocumentRoot /var/www/annotation_tool
+    #ServerAdmin webmaster@example.com
+
+    #DocumentRoot /var/www/documents
+
+    Alias /robots.txt /var/www/annotation_tool/annotate/static/robots.txt
+    Alias /favicon.ico /var/www/annotation_tool/annotate/static/favicon.ico
+
+    #Alias /media/ /path/to/mysite.com/media/
+    Alias /static/ /var/www/annotation_tool/annotate/static/
+    #Alias data/ /var/www/annotation_tool/data
+    WSGIScriptAlias / /var/www/annotation_tool/semantic_frame_annotation/wsgi.py
+    #WSGIPythonHome /usr/lib/python3.6
+    #WSGIPythonPath /var/www/annotation_tool
+    WSGIDaemonProcess example.com python-home=/var/www/annotation_tool/venv processes=2 threads=15 display-name=%{GRUOP}
+    WSGIProcessGroup example.com
+    
+ 
+
+    <Directory /var/www/annotation_tool/semantic_frame_annotation/>
+      #<Files wsgi.py>
+        AllowOverride all
+        Require all granted
+        Options FollowSymlinks
+      #</Files>
+    </Directory>
+</VirtualHost>
+
+sudo a2ensite annotation-tool.conf
+sudo systemctl restart apache2.service
+
+
+# change rights in directory
+sudo chown -R www-data /var/www
+sudo chmod -R g+rwX /var/www

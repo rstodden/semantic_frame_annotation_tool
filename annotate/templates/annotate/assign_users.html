@@ -1,0 +1,111 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Assign users to frames</h1>
+        <div class="container-fluid">
+            <form method="post">
+                {%  csrf_token %}
+                <div class="row">
+                    <div class="col-md-12">
+                        Select frame records either from the left or right column! If you click on a option (not select multiple) the selection of the column is deleted.
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12" style="font-size: 14pt;color:red;">
+                        {% if success %}
+                            {{ success }}
+                            Assigned frames:
+                            <ul>
+                                {%  for frame in assigned_frames %}
+                                    <li>{{ frame }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label for="frame_selection_verb"> Select frames by verb: </label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="frame_selection_verb" name="frame_selection_verb" size="25" multiple>
+                            {% for frame in frame_list_verb %}
+                                <option value="{{frame.id}}" name="frame_option" onclick="elements = document.getElementById('frame_selection_type').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;};elements = document.getElementById('frame_selection_date').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;}; elements = document.getElementById('frame_selection_not_assigned').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;};">{{ frame.verb_lemma }} with type {{ frame.f_type }} ({{ frame.sentence_id }}:{{ frame.position }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="frame_selection_type"> Select frames by frame: </label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="frame_selection_type" name="frame_selection_type" size="25" multiple>
+                            {% for frame in frame_list_type %}
+                                <option value="{{frame.id}}" name="frame_option" onclick="elements = document.getElementById('frame_selection_verb').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;};elements = document.getElementById('frame_selection_date').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;}; elements = document.getElementById('frame_selection_not_assigned').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;};">{{ frame.f_type }} ({{ frame.verb_lemma }} {{ frame.sentence_id }}:{{ frame.position }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-1">
+                        <label for="frame_selection_date"> Select frames by date: </label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="frame_selection_date" name="frame_selection_date" size="25" multiple>
+                            {% for frame in frame_list_date %}
+                                <option value="{{frame.id}}" name="frame_option" onclick="elements = document.getElementById('frame_selection_verb').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;}; elements = document.getElementById('frame_selection_type').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;}; elements = document.getElementById('frame_selection_not_assigned').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;};">{{ frame.f_type }} ({{ frame.verb_lemma }} {{ frame.sentence_id }}:{{ frame.position }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label for="frame_selection_not_assigned"> Select frames which are not assigned to a user: </label>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="frame_selection_not_assigned" name="frame_selection_not_assigned" size="25" multiple>
+                            {% for frame in frame_list_not_assigned %}
+                                <option value="{{frame.id}}" name="frame_option" onclick="elements = document.getElementById('frame_selection_type').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;};elements = document.getElementById('frame_selection_date').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;} elements = document.getElementById('frame_selection_verb').options;for(var i = 0; i < elements.length; i++){elements[i].selected = false;}">{{ frame.verb_lemma }} with type {{ frame.f_type }} ({{ frame.sentence_id }}:{{ frame.position }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                        <label for="user_selection">Select a user: </label>
+                    </div>
+                    <div class="col-md-11">
+                        <select size="10" name="user_selection" id="user_selection" required>
+                            {% for user in user_list %}
+                                <option value="{{ user }}" name="user_option">{{ user }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 assign_checkbox">
+                        <input id="not_assigned_frames" name="not_assigned_frames" type="checkbox">
+                        <label for="not_assigned_frames">only assign frames which are not assigned to someone else</label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12" style="font-size: 14pt;color:red;">
+                        {% if success %}
+                            {{ success }}
+                            Assigned frames:
+                            <ul>
+                                {%  for frame in assigned_frames %}
+                                    <li>{{ frame }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit">Save</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    {% endblock %}

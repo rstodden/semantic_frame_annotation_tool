@@ -1,0 +1,616 @@
+	{% extends 'annotate/base.html' %}
+
+		{% block content %}
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="row instruction">
+                            <div class="col-md-12" id="short_instruction"></div>
+                        </div>
+                        <div class="container-fluid sentence" id="sentence">
+                            <!--<div class="row" id="introduction">
+                                <p>Choose a frame type for the verb <u>{{ frame.verb_lemma }}</u> in the following sentence
+                                    and choose the suitable core elements. You can add them by clicking on the tokens of the sentence,
+                                    they will listed below.
+                                </p>
+                            </div>-->
+                            <input id="all_frame_types" name="all_frame_types" value="{{ request.session.all_frame_types }}" hidden>
+                            <input id="annotation_state" type="number" value={{ annotation_state }} hidden>
+                            <input id="add_custom_frame_types" value="{{ add_custom_frame_types }}" hidden>
+                            <input id="add_custom_element_types" value="{{ add_custom_element_types }}" hidden>
+                            <div id="sentence_presentation" class="row">
+                                <div class="col-md-12 sentence_presentation">
+                                    <div class="col-md-10 div_tokens">
+                                        {% for token in frame.sentence.token.all %}
+                                            {% if token.position|stringformat:"i" in frame.position|split:"-" and token.position not in vmwe_positions %}
+                                                <span id="frame_verb" class="verb " name="frame_verb_{{ forloop.counter }}" data-token_id = "{{ token.id }}" data-word_form="{{ token.word_form }}" data-position="{{ token.position }}" data-lemma="{{ token.lemma }}">{{ token.word_form }}</span>
+                                            {% elif token.position in core_element_positions and token.position in multiword_component_positions %}
+                                                {% if token.dep_nr == frame.position %}
+                                                    <span type="button" class="edit_button" name="verb_child"  id="core_element_{{ token.id }}" data-toggle="modal" data-verbal_mwe=0 data-token_id = "{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}"  data-element_id="token_{{ forloop.counter }}" data-id="{{token.core_element_id}}" data-type="child"  data-annotation="core_element" data-core_element=1 data-MWE=1 onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' title="{{ token.slot_type }}">{{ token.word_form }}</span>
+                                                {%  else %}
+                                                    <span type="button" class="edit_button" name="token"  id="core_element_{{ token.id }}" data-toggle="modal" data-verbal_mwe=0  data-token_id = "{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}"  data-element_id="token_{{ forloop.counter }}" data-id="{{token.core_element_id}}" data-type="token"  data-annotation="core_element" data-core_element=1 data-MWE=1 onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' title="{{ token.slot_type }}">{{ token.word_form }}</span>
+                                                {% endif %}
+                                            {% elif token.position in core_element_positions %}
+                                                {% if token.dep_nr == frame.position %}
+                                                    <span type="button" class="edit_button" name="verb_child"  id="core_element_{{ token.id }}" data-toggle="modal" data-verbal_mwe=0  data-token_id = "{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}"  data-element_id="token_{{ forloop.counter }}" data-id="{{token.core_element_id}}" data-type="child"  data-annotation="core_element" data-core_element=1 data-MWE=0 onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' title="{{ token.slot_type }}">{{ token.word_form }}</span>
+                                                {%  else %}
+                                                    <span type="button" class="edit_button" name="token"  id="core_element_{{ token.id }}" data-toggle="modal" data-verbal_mwe=0  data-token_id = "{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}"  data-element_id="token_{{ forloop.counter }}" data-id="{{token.core_element_id}}" data-type="token"  data-annotation="core_element" data-core_element=1 data-MWE=0 onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' title="{{ token.slot_type }}">{{ token.word_form }}</span>
+                                                {% endif %}
+                                            {% elif token.position in multiword_component_positions %}
+                                                {% if token.dep_nr == frame.position %}
+                                                    <span type="button" class="token add_button" name="verb_child" id="token_{{ token.position }}" data-verbal_mwe=0  data-toggle="modal"  data-token_id="{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}" data-element_id="token_{{ forloop.counter }}" data-annotation="multiword_expression" data-core_element=0 data-MWE=1 title="child of {{ frame.verb_lemma }}" data-type="child" onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' >{{ token.word_form }}</span>
+                                                {% else %}
+                                                    <span type="button" class="token add_button" name="token" id="token_{{ token.position }}" data-toggle="modal" data-verbal_mwe=0   data-token_id="{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}" data-element_id="token_{{ forloop.counter }}"  title="" data-annotation="multiword_expression" data-core_element=0 data-MWE=1 data-type="token" onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' > {{ token.word_form }}</span>
+                                                {% endif %}
+                                            {% elif token.position in vmwe_positions %}
+                                                {% if token.dep_nr == frame.position %}
+                                                    <span type="button" class="token add_button verb" name="verb_child" id="token_{{ token.position }}" data-verbal_mwe=1  data-toggle="modal"  data-token_id="{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}" data-element_id="token_{{ forloop.counter }}" data-annotation="multiword_expression" data-core_element=0 data-MWE=1 title="child of {{ frame.verb_lemma }}" data-type="child" onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' >{{ token.word_form }}</span>
+                                                {% else %}
+                                                    <span type="button" class="token add_button verb" name="token" id="token_{{ token.position }}" data-toggle="modal" data-verbal_mwe=1   data-token_id="{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}" data-element_id="token_{{ forloop.counter }}"  title="" data-annotation="multiword_expression" data-core_element=0 data-MWE=1 data-type="token" onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' > {{ token.word_form }}</span>
+                                                {% endif %}
+                                            {% else %}
+                                                {% if token.dep_nr == frame.position %}
+                                                    <span type="button" class="token add_button" name="verb_child" id="token_{{ token.position }}" data-toggle="modal" data-verbal_mwe=0  data-token_id="{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}" data-element_id="token_{{ forloop.counter }}" data-type="child" data-annotation="token" data-core_element=0 data-MWE=0 onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' title="child of {{ frame.verb_lemma }}">{{ token.word_form }}</span>
+                                                {% else %}
+                                                    <span class="token add_button" name="token" id="token_{{ token.position }}" data-toggle="modal" data-verbal_mwe=0  data-token_id="{{ token.id }}" data-word_form="{{ token.word_form }}" data-lemma="{{ token.lemma }}" data-position="{{ token.position }}" data-element_id="token_{{ forloop.counter }}" data-type="token" data-annotation="token" data-core_element=0 data-MWE=0 onclick='set_selection_of_core_element_types("{{ token.id }}", "{{ token.word_form }}", "{{ token.lemma }}", "{{ token.position }}")' title=""> {{ token.word_form }}</span>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    <div class="col-md-2 slider_area hidden_element" id="slider_higlight_area">
+                                        <div class="row highlighting">
+                                            Highlighting:
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="slider_child" onclick="change_color_token()">
+                                                    <span class="slider round slider_child"></span>
+                                                    <label for="slider_child" class="label_slider">STX</label>
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="slider_mwc" onclick="change_color_token()">
+                                                    <span class="slider round slider_mwc"></span>
+                                                    <label for="slider_mwc" class="label_slider">MWU</label>
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label class="switch">
+                                                    <input type="checkbox" id="slider_core_element" onclick="change_color_token()">
+                                                    <span class="slider round slider_slot"></span>
+                                                    <label for="slider_core_element" class="label_slider">FEs</label>
+                                                </label>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="row instruction hidden_element" id="instruction_sentence">
+                                    <div class="col-md-12">
+                                        1) Read the sentence and click on the next button to continue.
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12">
+                                <div class="row skip_reason hidden_element" id="skip_reason">
+                                    <div class="col-md-12">
+                                        {% if frame.skip_reason != '' %}
+                                            Reason for skipping the sentence: {{ frame.skip_reason }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <form action="{% url 'frames_list' %}" method="POST">
+                            {% csrf_token %}
+                            <!--<input id="frame_number" name="frame_number" value="{{ frame.id }}" hidden>-->
+                            <!-- frame type -->
+                                <div class="container-fluid instruction_mwe hidden_element" id="mwe_block">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12 instruction hidden_element" id="instruction_mwe">
+                                                 2) Add, edit and remove multiword expressions (MWE) in the above sentence. A MWE is a unit of meaning that refers to a unique concept.
+                                                Click on a token to add it to a MWE, remove it with a second click on the token. Press "save MWE" to save one MWE and to add the next MWE. If the annotation of MWEs is finished, press the next button.
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 mwe_representation" id="mwe_representation">
+
+                                            </div>
+                                            <div class="col-md-12 div_mwe_list" id="div_mwe_list">
+                                                List of all selected multiword arguments:
+                                                <ol id="mwe_list">
+                                                    {% for mwe in all_mwes %}
+                                                        <li id="mwe_{{ mwe.id }}">
+                                                            {% for component in mwe.components.all %}
+                                                                {{ component.lemma }}
+                                                            {% endfor %}
+                                                            <button type="button" id="mwe_delete_{{ mwe.id }}" name="mwe_delete" value="{{ mwe.id }}" onclick="delete_multiword_expression({{ mwe.id }}, check_overlapping=true, this)">delete</button>
+                                                            <!--<button id="mwe_edit_{{ mwe.id }}" name="mwe_edit" value="{{ mwe.id }}" onclick="edit_multiword_expression({{ mwe.id }})">edit</button>-->
+                                                        </li>
+                                                    {% endfor %}
+                                                </ol>
+
+                                            </div>
+                                            <div class="col-md-12 hidden_element" id="mwe_save_button">
+                                                <button type="button" class="btn" onclick="save_mwe(true, this)">Save MWU</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="frame_type_selection" class="container-fluid choose_frame_type hidden_element">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12 instruction hidden_element" id="frame_type_introduction" >
+                                                3) Choose a frame type for <b>{{ frame.verb_lemma }}<span id="verb_addition_instruction_type" name="verb_addition">{{ frame.verb_addition }}</span></b> in the above sentence:
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 frame_types" id="frame_types_form">
+                                                {% if additional_frame_type != '' %}
+                                                    <input type="radio" id="f-type_-1" class="frame_type" name="f-type" value="{{ additional_frame_type }}" onclick="save_frame_type('{{ additional_frame_type }}')" checked/>
+                                                    <label for="f-type_-1" onclick="check_radio_button('f-type_-1')">{{ additional_frame_type }} </label>
+                                                    {% if not add_custom_frame_types %}
+                                                        <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/frame/{{ additional_frame_type }}.xml" title="extern frame type definition" target="_blank">
+                                                            &#9432;
+                                                        </a>
+                                                        {% endif %}
+                                                    <br/>
+                                                {% endif %}
+                                                {% for frame_type in selection_frame_types %}
+                                                    {% if frame.f_type == frame_type.name %}
+                                                        <input type="radio" id="f-type_{{ forloop.counter }}" class="frame_type" name="f-type" value="{{ frame_type.name }}" onclick="save_frame_type('{{ frame_type.name }}')" checked/>
+                                                        <label for="f-type_{{ forloop.counter }}" onclick="check_radio_button('f-type_{{ forloop.counter }}')" class="label_frame_type">{{ frame_type.name }} </label>
+                                                        {% if frame_type.new_custom_value == False %}
+                                                            <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/frame/{{ frame_type.name }}.xml" title="extern frame type definition" target="_blank">
+                                                                &#9432;
+                                                            </a>
+                                                        {% else %}
+                                                            <a href="#" title="custom frame type, no information or examples provided">
+                                                                &#9432;
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if verb_examples|get_item:frame_type.name != None %}
+                                                            <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/lu/lu{{ verb_examples|get_item:frame_type.name }}.xml" target="_blank" title="annotated examples of {{ frame.verb_lemma }} with {{ frame_type.name }}">
+                                                                <i class="fa fa-list-ul"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                        <br/>
+                                                    {% else %}
+                                                        <input type="radio" id="f-type_{{ forloop.counter }}" class="frame_type" name="f-type" value="{{ frame_type.name }}" onclick="save_frame_type('{{ frame_type.name }}')" />
+                                                        <label for="f-type_{{ forloop.counter }}" onclick="check_radio_button('f-type_{{ forloop.counter }}')"  class="label_frame_type">{{ frame_type.name }} </label>
+                                                        {% if frame_type.new_custom_value == False %}
+                                                            <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/frame/{{ frame_type.name }}.xml" title="extern frame type definition" target="_blank">
+                                                                &#9432;
+                                                            </a>
+                                                        {% else %}
+                                                            <a href="#" title="custom frame type, no information or examples provided">
+                                                                &#9432;
+                                                            </a>
+                                                        {% endif %}
+                                                        {% if verb_examples|get_item:frame_type.name != None %}
+                                                            <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/lu/lu{{ verb_examples|get_item:frame_type.name }}.xml" target="_blank" title="annotated examples of {{ frame.verb_lemma }} with {{ frame_type.name }}">
+                                                                <i class="fa fa-list-ul"></i>
+                                                            </a>
+                                                        {% endif %}
+                                                        <br/>
+                                                    {% endif %}
+                                                {% endfor %}
+                                                <input type="radio" id="f-type_other" class="frame_type" name="f-type" value="other"/> <input type="text" name="f-type_other_text" id="f-type_other_text" placeholder="choose another type or define one" onkeypress="check_radio_button('f-type_other')" size="50" onkeydown="if (event.keyCode == 13) {return false;}">
+
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 synonyms">
+                                                    <a class="btn synnonym_button" data-toggle="collapse" href="#frame_types_synonyms" role="button" aria-expanded="false" aria-controls="frame_types_{{ synonym }}" aria-expanded="false" id="button_show_synonyms">
+                                                        Show frame types of synonyms of {{ frame.verb_lemma }} <i class="fa fa-chevron-down"></i>
+                                                    </a>
+                                                <div class="collapse" id="frame_types_synonyms">
+                                                    <ul id="list_synonyms" class="synonyms_list">
+                                                        {% for synonym in synonym_frame_type_dict %}
+                                                            <li>
+                                                                <a class="btn synnonym_button" data-toggle="collapse" href="#frame_types_{{ synonym }}" role="button" aria-expanded="false" aria-controls="frame_types_{{ synonym }}">
+                                                                    {{ synonym }} <i class="fa fa-chevron-down"></i>
+                                                                </a>
+                                                                <div id="frame_types_{{ synonym }}" class="collapse">
+                                                                    {% for frame_type_pair in synonym_frame_type_dict|get_item:synonym %}
+                                                                        <input type="radio" id="f-type_synonym_{{ forloop.parentloop.counter }}_{{ forloop.counter }}" class="frame_type" name="f-type" value="{{ frame_type_pair.1 }}" onclick="save_frame_type('{{ frame_type_pair.1 }}', other=true)" />
+                                                                        <label for="f-type_synonym_{{ forloop.parentloop.counter }}_{{ forloop.counter }}" onclick="check_radio_button('f-type_synonym_{{ forloop.parentloop.counter }}_{{ forloop.counter }}')"  class="label_frame_type">{{ frame_type_pair.1 }}</label>
+                                                                        <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/frame/{{ frame_type_pair.1 }}.xml" title="extern frame type definition" target="_blank">
+                                                                            &#9432;
+                                                                        </a>
+                                                                        <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/lu/lu{{ frame_type_pair.0 }}.xml" target="_blank" title="annotated examples of {{ synonym }} with {{ frame_type_pair.1 }}">
+                                                                            <i class="fa fa-list-ul"></i>
+                                                                        </a>
+                                                                        <br>
+                                                                    {% endfor %}
+                                                                </div>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid instruction_core hidden_element" id="instruction_core">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12 instruction ">
+                                                 4) Add, edit and remove core elements with a click on a token in the sentence above.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid certainty hidden_element" id="certainty">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <!--<div class="col-md-12">
+                                                    <label for="multiple_frame_types">Is more than one frame type possible?</label><br/>
+                                                    <input type="checkbox" name="multiple_frame_types" id="multiple_frame_type_disambiguation"> Yes, sentence is disambigous.<br>
+                                                    <input type="checkbox" name="multiple_frame_types" id="multiple_frame_type_supordination"> Yes, the selected frame type also implies other frame types.
+                                                    <br/>
+                                                    <input type="text" name="multiple_frame_types_sub" id="subordinated_frame_type_field" placeholder="implied frame type" size="50">
+                                                    <br>
+                                                    <div class="row" id="subordinated_frame_types">
+                                                        <div class="col-md-12">
+                                                           {{ subordinated_frame_types }}
+                                                        </div>
+                                                    </div>
+                                            </div>-->
+                                            <div class="col-md-12">
+                                                 <label for="certainty">5) How certain are you about your annotation?</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="certainty_scale">
+                                                    very uncertain (1)
+                                                    {% for certain_input in 6|times %}
+                                                        {% if certainty != None %}
+                                                            {% if certainty == certain_input %}
+                                                                <input type="radio" name="certainty_scale" id="certainty_scale_{{ certain_input }}" value="{{ certain_input}}" checked>
+                                                            {% else %}
+                                                                <input type="radio" name="certainty_scale" id="certainty_scale_{{ certain_input }}" value="{{ certain_input}}" >
+                                                            {% endif %}
+                                                        {% else %}
+                                                            {% if 4 == certain_input %}
+                                                                <input type="radio" name="certainty_scale" id="certainty_scale_{{ certain_input }}" value="{{ certain_input}}" checked>
+                                                            {% else %}
+                                                                <input type="radio" name="certainty_scale" id="certainty_scale_{{ certain_input }}" value="{{ certain_input}}" >
+                                                            {% endif %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    (5) very certain
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid summary hidden_element" id="comment_area">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <label for="comment"> 6) Optional comment: </label><br/>
+                                                <textarea name="comment" id="comment" rows="2" class="form-control comment_field">{% if comment %}{{ comment }}{% endif %}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="container-fluid summary" id="summary">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <b>Multiword Units:</b>
+                                                        <ul>
+                                                            {% for mwe in frame.mwe.all %}
+                                                                <li>{{ mwe }}</li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <button id="change_mwe" onclick="change_annotation(1)" type="button">Change</button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <b>Frame Type:</b> {{ frame.f_type }}
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <button id="change_frame_type" onclick="change_annotation(2)" type="button">Change</button>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <b>Core Elements:</b>
+                                                        <ul>
+                                                            {% for slot in frame.slot_element.all %}
+                                                                <li>
+                                                                    Lemma: {{ slot }}, <br>
+                                                                    Core Element Type: {{ slot.core_element_type }}
+                                                                    {% if slot.reference_c or slot.reference_d or slot.reference_r %}
+                                                                        , <br>
+                                                                        Reference:
+                                                                        {% if slot.reference_c %} coercion, {% endif %}
+                                                                        {% if slot.reference_d %} discourse resolution, {% endif %}
+                                                                        {% if slot.reference_r %} pronoun resolution, {% endif %}
+                                                                {% endif %}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <button id="change_slots" onclick="change_annotation(3)" type="button">Change</button>
+                                                    </div>
+                                                </div>
+
+                                                {% if frame.comment %}
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                                <b>Comment:</b> {{ frame.comment }}
+
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <button id="change_comment" onclick="change_annotation(4)" type="button">Change</button><br>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                                {% if frame.certainty %}
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <b>Certainty:</b> {{ frame.certainty }}
+                                                        </div>
+                                                        <div class="col-md-4">
+                                                            <button id="change_certainty" onclick="change_annotation(4)" type="button">Change</button>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+                            <!-- Modal change elements-->
+                            <div class="modal fade" id="myModal" role="dialog">
+                                <div class="modal-dialog" id="my_modal">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" id="x_button">&times;</button>
+                                            <h4 class="modal-title">Change <u id="core_element_name_edit"></u> in the frame {{ frame.verb_lemma }}<span id="verb_addition_edit_headline"  name="verb_addition">{{ frame.verb_addition }}</span>.<span id="modal_edit_frame_name">{{ frame.f_type }}</span></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="col-md-6">
+                                                    <div class="row" id="add_core_element">
+                                                        Slot-Type:<br/>
+                                                        <span id="div_edit_slot_type">
+
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <!--<div class="row">
+                                                        <label for="role_text_edit">Role label:</label>
+                                                        <input type="text" name="role_text_edit" id="role_text_edit" placeholder="semantic role">
+                                                        <a href="{% url 'semantic_role' %}" target="_blank">&#9432;</a>
+                                                    </div>-->
+                                                    <div class="row">
+                                                        Reference:<br>
+                                                        <input id="reference_c_edit" name="reference_edit" type="checkbox" value="c">
+                                                        <label for="reference_c_edit">C</label><span data-toggle="tooltip" data-placement="right" data-original-title="coercion; a reference resolution" class="info_icon">&#9432;</span>
+                                                        <br>
+                                                        <input id="reference_r_edit" name="reference_edit" type="checkbox" value="r">
+                                                        <label for="reference_r_edit">R</label><span data-toggle="tooltip" data-placement="right" data-original-title="pronoun resolution" class="info_icon">&#9432;</span>
+                                                        <br>
+                                                        <input id="reference_d_edit" name="reference_edit" type="checkbox" value="d">
+                                                        <label for="reference_d_edit">D</label><span data-toggle="tooltip" data-placement="right" data-original-title="discourse resolution" class="info_icon">&#9432;</span>
+                                                        <br>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <div class="col-md-1">
+                                                <button id="delete_button_edit" class="btn btn-default btn-delete" type="button" onclick="delete_core_element(this)" title="delete element from database">Delete<!--<i class="material-icons" title="delete element">delete</i>--></button>
+                                            </div>
+                                            <div>
+                                                <button id="cancel_button_edit" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-default" onclick="change_core_element()" title="save changes in database" id="save_button_edit">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <!-- Modal add elements-->
+                            <div class="modal fade" id="addElements" role="dialog">
+                                <div class="modal-dialog" id="add_elements" role="document">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" id="x_button_add">&times;</button>
+                                            <h4 class="modal-title">Add <u id="core_element_name_add"></u> to the frame {{ frame.verb_lemma }}<span id="verb_addition_add_headline" name="verb_addition">{{ frame.verb_addition }}</span>.<span id="modal_add_frame_name">{{ frame.f_type }}</span></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <p class="instruction">Is the selected token a core element?</p>
+
+                                                <div class="col-md-6">
+                                                    <div class="row" id="add_core_element">
+                                                        Core element type:<br/>
+                                                        <span id="div_add_slot_type">
+
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+                                                <!--<div class="col-md-6">
+                                                    <div class="row">
+                                                        Multiword component:<br>
+                                                        <input id="mwc" name="mwc" type="radio">
+                                                        <label for="mwc">multiword component</label>
+
+                                                    </div>
+                                                </div>-->
+                                                <div class="col-md-6">
+                                                    <!--<div class="row">
+                                                        <label for="role_text_add">Role label:</label>
+                                                        <input type="text" name="role_text_add" id="role_text_add" placeholder="semantic role">
+                                                        <a href="{% url 'semantic_role' %}" target="_blank">&#9432;</a>
+                                                    </div>-->
+                                                    <div class="row">
+                                                        Reference:<br>
+                                                        <input id="reference_c_add" name="reference_add" type="checkbox" value="c">
+                                                        <label for="reference_c_add">C</label><span data-toggle="tooltip" data-placement="right" data-original-title="coercion; a reference resolution" class="info_icon">&#9432;</span>
+                                                        <br>
+                                                        <input id="reference_r_add" name="reference_add" type="checkbox" value="r">
+                                                        <label for="reference_r_add">R</label><span data-toggle="tooltip" data-placement="right" data-original-title="pronoun resolution" class="info_icon">&#9432;</span>
+                                                        <br>
+                                                        <input id="reference_d_add" name="reference_add" type="checkbox" value="d">
+                                                        <label for="reference_d_add">D</label><span data-toggle="tooltip" data-placement="right" data-original-title="discourse resolution" class="info_icon">&#9432;</span>
+                                                        <br>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button id="cancel_button_add" type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                            <button type="button" class="btn btn-default" onclick="add_core_element()" title="Save changes" id="save_button_add">save</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal fade" id="skipModal" role="dialog">
+                                <div class="modal-dialog" id="skip_modal">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" id="x_button">&times;</button>
+                                            <h4 class="modal-title"><label for="skip_sentence_field">Why do you want to skip the sentence?</label></h4>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="container-fluid">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <textarea id="skip_sentence_field" name="skip_sentence" class="col-md-12" rows="5"></textarea>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <div>
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                                                <button type="button" class="btn btn-default" onclick="skip_frame(this)"  title="save changes in database">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="container-fluid save_area hidden_element" id="save_area" >
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <button id="back_button_save" title="go to the previous task" type="button"  onclick="go_back(this)" class="btn instruction">Back</button>
+                                        <button id="save_button" title="save and back to frame overview" type="submit"  onsubmit="changes_saved()" onclick="return changes_saved()" class="btn instruction">Save </button>
+                                        <label class="switch">
+                                            <input type="checkbox" id="slider_draft" name="slider_draft">
+                                            <span class="slider round slider_draft"></span>
+                                            <label for="slider_draft" class="label_slider">Draft</label>
+                                        </label>
+                                    </div>
+                                    <div class="col-md-6">
+
+                                    <button title="skip the sentence" type="button"   data-toggle="modal" data-target="#skipModal" class="btn instruction" id="skip_button_last_step">Skip</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                        <div class="container-fluid next_area" id="next_area">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button id="back_button" title="go to the previous task" type="button"  onclick="go_back(this)" class="btn instruction hidden_element">Back</button>
+                                    <button title="skip the sentence" type="button"   data-toggle="modal" data-target="#skipModal" class="btn instruction" id="skip_button">Skip</button>
+                                    <button title="go to the next task" type="button"  onclick="go_forward(this)" class="btn instruction" id="next_button">Next</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="col-md-4 current_frame_state hidden_element" id="current_frame_state">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="row">
+                                    <div class="col-md-12 instruction">
+                                        Current structure of the frame
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 instruction">
+                                        <mtext id="verb_lemma_instruction">{{ frame.verb_lemma }}<mtext id="verb_addition_instruction_rep" name="verb_addition">{{ frame.verb_addition }}</mtext>.</mtext><mspace linebreak="nobreak"></mspace><mtext mathvariant="italic" id="representation_frame_name_headline">{{ frame.f_type }}</mtext>
+                                    </div>
+                                </div>
+                                <div id="core_elements" class="col-md-12 core_elements">
+                                    <math>
+                                        <mfenced open="[ " close=" ]">
+                                            <mtable id="representation_core_element">
+                                                <mtr>
+                                                    <mtd>
+                                                        <mi class="representation_frame_name">
+                                                            <mtext id="verb_lemma_representation_name">{{ frame.verb_lemma }}<mtext id="verb_addition_name" name="verb_addition">{{ frame.verb_addition }}</mtext>.</mtext><mspace linebreak="nobreak"></mspace><mtext mathvariant="italic" id="representation_frame_name">{{ frame.f_type }}</mtext>
+                                                        </mi>
+                                                    </mtd>
+                                                </mtr>
+                                                {% for core_element in core_elements_dict %}
+                                                    <mtr id="representation_core_element_{{ core_element }}">
+                                                        <mtd>
+                                                            <mi class="representation_slot_type" id="core_element_slot_type_{{ core_element }}">{{ core_elements_dict|get_item:core_element|get_item:"slot_type" }}</mi>
+                                                            <!--<mi class="representation_semantic_role" id="core_element_semantic_role_{{ core_element }}">/ {{ core_elements_dict|get_item:core_element|get_item:"semantic_role" }}</mi>-->
+                                                        </mtd>
+                                                        <mtd>
+                                                            <mi class="representation_word_form" id="core_element_lemma_{{ core_element }}">{{ core_elements_dict|get_item:core_element|get_item:"lemma" }}</mi>
+                                                        </mtd>
+                                                    </mtr>
+                                                {% endfor %}
+                                            </mtable>
+                                        </mfenced>
+                                    </math>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2 col-md-offset-5">
+                        <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/luIndex.xml" target="_blank">Lexical Unit Index</a>
+                        |
+                        <a href="http://corpora.phil.hhu.de/framenet/fndata-1.7/frameIndex.xml" target="_blank">Frame Index</a>
+                    </div>
+                </div>
+            <script src='../static/js/annotation_tool_analytics.js' type="text/javascript"></script>
+            <script src='../static/js/user_navigation.js' type="text/javascript"></script>
+            </div>
+
+		{% endblock %}

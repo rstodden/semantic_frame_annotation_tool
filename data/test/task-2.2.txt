@@ -1,0 +1,5 @@
+#20466020 24 drop.na price-:-22-:-UKN
+#20141014 23 increase.na income-:-21-:-UKN
+#20036026 18 fall.na order-:-4-:-UKN %-:-20-:-UKN
+#21057052 8 begin.na he-:-7-:-UKN career-:-10-:-UKN
+#21120012 10 start.na ldp-:-9-:-UKN crumble-:-12-:-UKN 

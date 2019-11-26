@@ -1,0 +1,5 @@
+#20466020 24 drop.na price-:-22-:-Agent
+#20141014 23 increase.na income-:-21-:-Agent
+#20036026 18 fall.na order-:-4-:-Agent %-:-20-:-Attributive-Paient
+#21057052 8 begin.na he-:-7-:-Agent career-:-10-:-Theme
+#21120012 10 start.na ldp-:-9-:-Agent crumble-:-12-:-Theme 

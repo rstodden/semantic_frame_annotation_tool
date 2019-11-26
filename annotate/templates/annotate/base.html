@@ -1,0 +1,111 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <!-- Toggle Button laden -->
+        <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+        <script src="{%  static 'js/jquery-1.12.4.js' %}"></script>
+        <script src="{% static 'js/jquery-ui.js' %}"></script>
+        <link rel="stylesheet" href="{%  static 'css/jquery-ui.css' %}">
+        <script src="{% static 'js/jquery-ui.min.js' %}"></script>
+
+        <!-- <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>-->
+
+        <!-- Bootstrap laden -->
+        <link rel="stylesheet"
+              href="{% static 'css/font-awesome.min.css'%}">
+        <!--<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">-->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<script src="{% static 'js/bootstrap.min.js'%}"></script>
+
+        <!-- Schrift laden -->
+        <link href="//fonts.googleapis.com/css?family=Lobster&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+
+        <!-- CSS laden -->
+        <link href="{% static 'css/auto-complete.css' %}" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+        <!-- Icons laden -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+        <link rel="stylesheet" href="{% static 'css/jquery.tablesorter.pager.css' %}">
+
+        <script>
+            jQuery.loadScript = function (url, callback) {
+                jQuery.ajax({
+                    url: url,
+                    dataType: 'script',
+                    success: callback,
+                    async: true
+                });
+            };
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+            var isChrome = !!window.chrome && !!window.chrome.webstore;
+            if (!isFirefox) {
+                $.loadScript('https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML', function () {
+                    }
+                );
+            }
+
+        </script>
+        <!--<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML' async></script>-->
+
+        <script src="{% static 'js/frame.js' %}" type="text/javascript"></script>
+        <script src=" {% static 'js/sweetalert.min.js' %}"></script>
+        <script src="{% static 'js/jquery.tablesorter.js' %}"></script>
+        <script src="{% static 'js/jquery.tablesorter.pager.js' %}"></script>
+        <script src="{% static 'js/jquery.tablesorter.min.js' %}"></script>
+        <link rel="shortcut icon" type="image/x-icon" href="{% static 'logo___copy__2__g6q_icon.ico' %}">
+
+
+        <title>Annotation Tool </title>
+    </head>
+    <body>
+        <!-- Autocomplete function von https://github.com/Pixabay/JavaScript-autoComplete -->
+        <script src="{% static 'js/auto-complete.js' %}" ></script>
+        <!--<script src="{% static 'js/auto-complete.min.js' %}" ></script>-->
+
+        <div class="page-header">
+            <h1>
+                <a href="{% url 'home' %}">Frame Annotation Tool </a>
+            </h1>
+            <!-- logout button -->
+            <div class="navigationbar">
+                {% if user.is_authenticated and request.path != '/frame_list' %}
+                    <a href="{% url 'frames_list' %}" class="navigationbar">To Main Page</a>
+                    |
+                {% endif %}
+                {% if user.is_superuser %}
+                    <a href="{% url 'admin_functions' %}" class="navigationbar">To Admin Functions</a>
+                    |
+                {% endif %}
+                {% if user.is_authenticated %}
+                    <a href="{% url 'logout' %}" class="navigationbar">Logout ({{ user.username }})</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="navigationbar">Login</a> |
+                    <a href="{% url 'signup' %}" class="navigationbar">Signup</a>
+                {% endif %}
+            </div>
+
+        </div>
+        <div class="container-fluid">
+            {% block content %}
+            {% endblock %}
+        </div>
+        <script src="{% static 'js/auto_complete_functions.js' %}" type="text/javascript"></script>
+        <footer>
+            {% url 'home' as home %}
+            {% if request.path == "frame_list" or request.path == home %}
+                <div class="footer-copyright text-center py-3">
+                    <a href="https://www.uni-duesseldorf.de/home/footer/datenschutz.html" target="_blank">Privacy Statement</a>
+                    <!--<a href="{% url 'comment' %}">Comment form</a>-->
+                </div>
+            {% endif %}
+        </footer>
+    </body>
+</html>

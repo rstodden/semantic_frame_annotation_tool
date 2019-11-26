@@ -1,0 +1,24 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Comment</h1>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+                    <form method="post" action="{% url 'comment' %}">
+                        {% csrf_token %}
+                        <div class="row">
+                            <label for="comment">Leave your comment here: </label>
+                        </div>
+                        <div class="row">
+                            <textarea name="comment_text" id="comment" rows="10" cols="75"></textarea>
+                        </div>
+                        <div class="row">
+                            <button class="btn" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    {% endblock %}

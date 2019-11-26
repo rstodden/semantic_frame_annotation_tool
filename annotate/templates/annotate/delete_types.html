@@ -1,0 +1,44 @@
+{% extends 'annotate/base.html' %}
+
+    {% block content %}
+        <h1>Delete Connection between FrameType and ElementType</h1>
+        <div class="container-fluid">
+            <p>Here are all elements listed which are added by users and we're not directly taken from FrameNet. The FrameType and the ElementType is listed, in the brackets are the current number of usage in annotated records (not including draft) and the total number of usage.</p>
+            <!--<form method="post" onsubmit="return swal({title: 'Are you sure?', text: 'Do you want to delete the selected connections?', icon: 'warning', buttons: true, dangerMode: true, }).then((willDelete) => {if (willDelete) {return true}}); ">-->
+            <form method="post" onsubmit="return confirm('Do you want to delete the selected connections?')">
+                {%  csrf_token %}
+                <div class="row">
+                    <div class="col-md-2">
+                        <label for="delete_ids"> Select unwanted connection between FrameTypes and ElementTypes: </label>
+                    </div>
+                    <div class="col-md-10">
+                        <select id="delete_ids" name="delete_ids_elementtypes" size="15" multiple>
+                            {% for element_id, element_value in output_dict_core.items %}
+                                <option value="{{element_id}}" name="element_id">{{ element_value.frame_type_name }} {{ element_value.element_type_name }} ({{ element_value.current_number }} / {{ element_value.total_number }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="row">
+                    <div class="col-md-2">
+                        <label for="delete_ids"> Select unwanted connections between FrameTypes and LexicalUnits: </label>
+                    </div>
+                    <div class="col-md-10">
+                        <select id="delete_ids" name="delete_ids_lexicalunits" size="15" multiple>
+                            {% for element_id, element_value in output_dict_lex.items %}
+                                <option value="{{element_id}}" name="element_id">{{ element_value.frame_type_name }} {{ element_value.element_type_name }} ({{ element_value.current_number }} / {{ element_value.total_number }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <button type="submit">Submit</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+    {% endblock %}

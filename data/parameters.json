@@ -1,0 +1,8 @@
+{
+  "parameters": {
+    "sentence_files": [
+      "data/ptb-ud-sentences.conllu"
+    ],
+    "position_starting_at_zero": 0
+  }
+}
