@@ -21,7 +21,22 @@ from command line shoot
 
 If you use SFA in your research, please cite SFA (Semantic Frame Annotation Tool)
 
-@inproceedings{}
+@inproceedings{qasemizadeh-etal-2019-semeval,
+    title = "{S}em{E}val-2019 Task 2: Unsupervised Lexical Frame Induction",
+    author = "QasemiZadeh, Behrang  and
+      Petruck, Miriam R. L.  and
+      Stodden, Regina  and
+      Kallmeyer, Laura  and
+      Candito, Marie",
+    booktitle = "Proceedings of the 13th International Workshop on Semantic Evaluation",
+    month = jun,
+    year = "2019",
+    address = "Minneapolis, Minnesota, USA",
+    publisher = "Association for Computational Linguistics",
+    url = "https://www.aclweb.org/anthology/S19-2003",
+    doi = "10.18653/v1/S19-2003",
+    pages = "16--30",
+}
 
 
 # How-to
